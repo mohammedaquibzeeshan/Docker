@@ -1,0 +1,278 @@
+Install Docker CE and Docker-Compose on CentOS 8
+
+We have configured a CentOS 8 (minimal) virtual machine with following specification.
+
+CPU - 3.4 Ghz (2 cores)
+Memory - 2 GB
+Storage - 20 GB
+Operating System - CentOS 8.0
+Hostname - docker-01.recipes.com
+IP Address - 192.168.116.206 /24
+ 
+
+Adding Docker CE yum Repository on CentOS 8:
+Connect with docker-01.recipes.com using ssh as root user.
+
+Docker CE is available to download from Docker's official website. However, we can also install it from Docker CE yum repository.
+
+Add Docker CE yum repository using dnf command.
+
+[root@docker-01 ~]# dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+Adding repo from: https://download.docker.com/linux/centos/docker-ce.repo
+
+Build cache for Docker yum repository.
+
+[root@docker-01 ~]# dnf makecache
+CentOS-8 - AppStream                            7.0 kB/s | 4.3 kB     00:00
+CentOS-8 - Base                                 2.2 kB/s | 3.9 kB     00:01
+CentOS-8 - Extras                               1.7 kB/s | 1.5 kB     00:00
+Docker CE Stable - x86_64                       6.5 kB/s |  21 kB     00:03
+Metadata cache created.
+
+ 
+
+Installing Docker CE on CentOS 8:
+After addition of Docker CE yum repository, we can now easily install Docker CE on CentOS 8 by using a dnf command.
+
+Docker CE requires containerd.io-1.2.2-3 (or later) package, which is blocked in CentOS 8. Therefore, we have to use an earlier version of containerd.io package.
+
+Install docker-ce with an earlier version of containerd.io using following command.
+
+[root@docker-01 ~]# dnf -y install --nobest docker-ce
+Last metadata expiration check: 0:21:14 ago on Wed 25 Dec 2019 10:25:37 PM PKT.
+Dependencies resolved.
+
+ Problem: package docker-ce-3:19.03.5-3.el7.x86_64 requires containerd.io >= 1.2.2-3, but none of the providers can be installed
+  - cannot install the best candidate for the job
+  - package containerd.io-1.2.10-3.2.el7.x86_64 is excluded
+  - package containerd.io-1.2.2-3.3.el7.x86_64 is excluded
+  - package containerd.io-1.2.2-3.el7.x86_64 is excluded
+  - package containerd.io-1.2.4-3.1.el7.x86_64 is excluded
+  - package containerd.io-1.2.5-3.1.el7.x86_64 is excluded
+  - package containerd.io-1.2.6-3.3.el7.x86_64 is excluded
+================================================================================
+ Package                      Arch   Version             Repository        Size
+================================================================================
+Installing:
+ docker-ce                    x86_64 3:18.09.1-3.el7     docker-ce-stable  19 M
+Installing dependencies:
+ container-selinux            noarch 2:2.94-1.git1e99f1d.module_el8.0.0+58+91b614e7
+                                                         AppStream         43 k
+ checkpolicy                  x86_64 2.8-2.el8           BaseOS           338 k
+ libcgroup                    x86_64 0.41-19.el8         BaseOS            70 k
+ policycoreutils-python-utils noarch 2.8-16.1.el8        BaseOS           228 k
+ python3-audit                x86_64 3.0-0.10.20180831git0047a6c.el8
+                                                         BaseOS            85 k
+ python3-libsemanage          x86_64 2.8-5.el8           BaseOS           127 k
+ python3-policycoreutils      noarch 2.8-16.1.el8        BaseOS           2.2 M
+ python3-setools              x86_64 4.2.0-2.el8         BaseOS           598 k
+ containerd.io                x86_64 1.2.0-3.el7         docker-ce-stable  22 M
+ docker-ce-cli                x86_64 1:19.03.5-3.el7     docker-ce-stable  39 M
+Enabling module streams:
+ container-tools                     rhel8
+Skipping packages with broken dependencies:
+ docker-ce                    x86_64 3:19.03.5-3.el7     docker-ce-stable  24 M
+
+Transaction Summary
+================================================================================
+Install  11 Packages
+Skip      1 Package
+
+Total download size: 84 M
+Installed size: 348 M
+Downloading Packages:
+(1/11): libcgroup-0.41-19.el8.x86_64.rpm        182 kB/s |  70 kB     00:00
+(2/11): container-selinux-2.94-1.git1e99f1d.mod 108 kB/s |  43 kB     00:00
+(3/11): python3-audit-3.0-0.10.20180831git0047a 102 kB/s |  85 kB     00:00
+(4/11): policycoreutils-python-utils-2.8-16.1.e 132 kB/s | 228 kB     00:01
+(5/11): python3-libsemanage-2.8-5.el8.x86_64.rp 106 kB/s | 127 kB     00:01
+(6/11): checkpolicy-2.8-2.el8.x86_64.rpm        126 kB/s | 338 kB     00:02
+(7/11): python3-setools-4.2.0-2.el8.x86_64.rpm  113 kB/s | 598 kB     00:05
+(8/11): python3-policycoreutils-2.8-16.1.el8.no 109 kB/s | 2.2 MB     00:20
+(9/11): docker-ce-18.09.1-3.el7.x86_64.rpm       75 kB/s |  19 MB     04:16
+(10/11): containerd.io-1.2.0-3.el7.x86_64.rpm    80 kB/s |  22 MB     04:41
+(11/11): docker-ce-cli-19.03.5-3.el7.x86_64.rpm 122 kB/s |  39 MB     05:31
+--------------------------------------------------------------------------------
+Total                                           240 kB/s |  84 MB     05:58
+warning: /var/cache/dnf/docker-ce-stable-091d8a9c23201250/packages/containerd.io-1.2.0-3.el7.x86_64.rpm: Header V4 RSA/SHA512 Signature, key ID 621e9f35: NOKEY
+Docker CE Stable - x86_64                       1.5 kB/s | 1.6 kB     00:01
+Importing GPG key 0x621E9F35:
+ Userid     : "Docker Release (CE rpm) <docker@docker.com>"
+ Fingerprint: 060A 61C5 1B55 8A7F 742B 77AA C52F EB6B 621E 9F35
+ From       : https://download.docker.com/linux/centos/gpg
+Key imported successfully
+Running transaction check
+Transaction check succeeded.
+Running transaction test
+Transaction test succeeded.
+Running transaction
+  Preparing        :                                                        1/1
+  Installing       : docker-ce-cli-1:19.03.5-3.el7.x86_64                  1/11
+  Running scriptlet: docker-ce-cli-1:19.03.5-3.el7.x86_64                  1/11
+  Installing       : containerd.io-1.2.0-3.el7.x86_64                      2/11
+  Running scriptlet: containerd.io-1.2.0-3.el7.x86_64                      2/11
+  Installing       : python3-setools-4.2.0-2.el8.x86_64                    3/11
+  Installing       : python3-libsemanage-2.8-5.el8.x86_64                  4/11
+  Installing       : python3-audit-3.0-0.10.20180831git0047a6c.el8.x86_    5/11
+  Running scriptlet: libcgroup-0.41-19.el8.x86_64                          6/11
+  Installing       : libcgroup-0.41-19.el8.x86_64                          6/11
+  Running scriptlet: libcgroup-0.41-19.el8.x86_64                          6/11
+  Installing       : checkpolicy-2.8-2.el8.x86_64                          7/11
+  Installing       : python3-policycoreutils-2.8-16.1.el8.noarch           8/11
+  Installing       : policycoreutils-python-utils-2.8-16.1.el8.noarch      9/11
+  Installing       : container-selinux-2:2.94-1.git1e99f1d.module_el8.0   10/11
+  Running scriptlet: container-selinux-2:2.94-1.git1e99f1d.module_el8.0   10/11
+  Running scriptlet: docker-ce-3:18.09.1-3.el7.x86_64                     11/11
+  Installing       : docker-ce-3:18.09.1-3.el7.x86_64                     11/11
+  Running scriptlet: docker-ce-3:18.09.1-3.el7.x86_64                     11/11
+  Verifying        : container-selinux-2:2.94-1.git1e99f1d.module_el8.0    1/11
+  Verifying        : checkpolicy-2.8-2.el8.x86_64                          2/11
+  Verifying        : libcgroup-0.41-19.el8.x86_64                          3/11
+  Verifying        : policycoreutils-python-utils-2.8-16.1.el8.noarch      4/11
+  Verifying        : python3-audit-3.0-0.10.20180831git0047a6c.el8.x86_    5/11
+  Verifying        : python3-libsemanage-2.8-5.el8.x86_64                  6/11
+  Verifying        : python3-policycoreutils-2.8-16.1.el8.noarch           7/11
+  Verifying        : python3-setools-4.2.0-2.el8.x86_64                    8/11
+  Verifying        : containerd.io-1.2.0-3.el7.x86_64                      9/11
+  Verifying        : docker-ce-3:18.09.1-3.el7.x86_64                     10/11
+  Verifying        : docker-ce-cli-1:19.03.5-3.el7.x86_64                 11/11
+
+Installed:
+  docker-ce-3:18.09.1-3.el7.x86_64
+  container-selinux-2:2.94-1.git1e99f1d.module_el8.0.0+58+91b614e7.noarch
+  checkpolicy-2.8-2.el8.x86_64
+  libcgroup-0.41-19.el8.x86_64
+  policycoreutils-python-utils-2.8-16.1.el8.noarch
+  python3-audit-3.0-0.10.20180831git0047a6c.el8.x86_64
+  python3-libsemanage-2.8-5.el8.x86_64
+  python3-policycoreutils-2.8-16.1.el8.noarch
+  python3-setools-4.2.0-2.el8.x86_64
+  containerd.io-1.2.0-3.el7.x86_64
+  docker-ce-cli-1:19.03.5-3.el7.x86_64
+
+Skipped:
+  docker-ce-3:19.03.5-3.el7.x86_64
+
+Complete!
+
+Enable and start Docker service.
+
+[root@docker-01 ~]# systemctl enable --now docker.service
+Created symlink /etc/systemd/system/multi-user.target.wants/docker.service â /usr/lib/systemd/system/docker.service.
+
+Check status of Docker service.
+
+[root@docker-01 ~]# systemctl status docker.service
+â docker.service - Docker Application Container Engine
+   Loaded: loaded (/usr/lib/systemd/system/docker.service; enabled; vendor pres>
+   Active: active (running) since Wed 2019-12-25 22:56:45 PKT; 30s ago
+     Docs: https://docs.docker.com
+ Main PID: 3139 (dockerd)
+    Tasks: 17
+   Memory: 66.9M
+   CGroup: /system.slice/docker.service
+           ââ3139 /usr/bin/dockerd -H fd://
+           ââ3148 containerd --config /var/run/docker/containerd/containerd.tom>
+
+Dec 25 22:56:43 docker-01.recipes.com dockerd[3139]: time="2019-12-25T22:56:43.>
+Dec 25 22:56:43 docker-01.recipes.com dockerd[3139]: time="2019-12-25T22:56:43.>
+Dec 25 22:56:43 docker-01.recipes.com dockerd[3139]: time="2019-12-25T22:56:43.>
+Dec 25 22:56:43 docker-01.recipes.com dockerd[3139]: time="2019-12-25T22:56:43.>
+Dec 25 22:56:44 docker-01.recipes.com dockerd[3139]: time="2019-12-25T22:56:44.>
+Dec 25 22:56:44 docker-01.recipes.com dockerd[3139]: time="2019-12-25T22:56:44.>
+Dec 25 22:56:45 docker-01.recipes.com dockerd[3139]: time="2019-12-25T22:56:45.>
+Dec 25 22:56:45 docker-01.recipes.com dockerd[3139]: time="2019-12-25T22:56:45.>
+Dec 25 22:56:45 docker-01.recipes.com dockerd[3139]: time="2019-12-25T22:56:45.>
+Dec 25 22:56:45 docker-01.recipes.com systemd[1]: Started Docker Application Co>
+
+Check Docker version.
+
+[root@docker-01 ~]# docker version
+Client: Docker Engine - Community
+ Version:           19.03.5
+ API version:       1.39 (downgraded from 1.40)
+ Go version:        go1.12.12
+ Git commit:        633a0ea
+ Built:             Wed Nov 13 07:25:41 2019
+ OS/Arch:           linux/amd64
+ Experimental:      false
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          18.09.1
+  API version:      1.39 (minimum version 1.12)
+  Go version:       go1.10.6
+  Git commit:       4c52b90
+  Built:            Wed Jan  9 19:06:30 2019
+  OS/Arch:          linux/amd64
+  Experimental:     false
+
+Docker CE has been installed on CentOS 8.
+
+ 
+
+Create a Container using Docker in CentOS 8:
+Let's put Docker into action by creating a simple container.
+
+For this purpose, we are using official image of Alpine Linux from Docker Hub.
+
+[root@docker-01 ~]# docker search alpine --filter is-official=true
+NAME                DESCRIPTION                                     STARS               OFFICIAL            AUTOMATED
+alpine              A minimal Docker image based on Alpine Linuxâ¦   5945                [OK]
+
+Pull Alpine Linux image from Docker Hub.
+
+[root@docker-01 ~]# docker pull alpine
+Using default tag: latest
+latest: Pulling from library/alpine
+e6b0cf9c0882: Pull complete
+Digest: sha256:2171658620155679240babee0a7714f6509fae66898db422ad803b951257db78
+Status: Downloaded newer image for alpine:latest
+docker.io/library/alpine:latest
+
+List locally available docker images.
+
+[root@docker-01 ~]# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+alpine              latest              cc0abc535e36        23 hours ago        5.59MB
+
+Create and run a container using Alpine Linux image.
+
+[root@docker-01 ~]# docker run -it --rm alpine /bin/sh
+/ # cat /etc/os-release
+NAME="Alpine Linux"
+ID=alpine
+VERSION_ID=3.11.2
+PRETTY_NAME="Alpine Linux v3.11"
+HOME_URL="https://alpinelinux.org/"
+BUG_REPORT_URL="https://bugs.alpinelinux.org/"
+/ # uname -a
+Linux c0089c037e24 4.18.0-80.11.2.el8_0.x86_64 #1 SMP Tue Sep 24 11:32:19 UTC 2019 x86_64 Linux
+/ # exit
+
+ 
+
+Installing Docker-compose on CentOS 8:
+Additionally, we are installing docker-compose on our CentOS 8 server, so we can create and run multiple containers as a single service.
+
+Download docker-compose package from GitHub.
+
+[root@docker-01 ~]# curl -L https://github.com/docker/compose/releases/download/1.25.1-rc1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   617    0   617    0     0    546      0 --:--:--  0:00:01 --:--:--   546
+100 16.2M  100 16.2M    0     0   184k      0  0:01:29  0:01:29 --:--:--  276k
+
+Grant execute permissions to docker-compose command.
+
+[root@docker-01 ~]# chmod +x /usr/local/bin/docker-compose
+
+Check docker-compose version.
+
+[root@docker-01 ~]# docker-compose version
+docker-compose version 1.25.1-rc1, build d92e9bee
+docker-py version: 4.1.0
+CPython version: 3.7.4
+OpenSSL version: OpenSSL 1.1.0l  10 Sep 2019
+
+We have successfully installed Docker CE and Docker-Compose on CentOS 8.
